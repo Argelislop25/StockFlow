@@ -47,3 +47,59 @@ class Product(models.Model):  # Corregido: Product con P mayúscula por convenci
 
     def __str__(self):
         return self.name
+
+    
+class StockMovement(models.Model):
+    CONCEPT_CHOICES = [
+        ("sale", "Venta"),
+        ("damaged", "Producto dañado"),
+        ("loss", "Pérdida"),
+        ("internal", "Uso interno"),
+        ("other", "Otro"),
+    ]
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+        related_name="movements"
+    )
+
+    document_number = models.CharField(
+        max_length=30,
+        unique=True,
+        null=True,
+        blank=True
+    )
+
+    delivered_by = models.CharField(
+        max_length=150,
+        default="Administrador"
+    )
+
+    received_by = models.CharField(
+        max_length=150,
+        blank=True,
+        default=""
+    )
+
+    
+
+    movement_type = models.CharField(
+        max_length=10,
+        default="exit"
+    )
+
+    quantity = models.PositiveIntegerField()
+
+    concept = models.CharField(
+        max_length=20,
+        choices=CONCEPT_CHOICES
+    )
+
+    movement_date = models.DateField()
+    movement_time = models.TimeField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.quantity} - {self.concept}"
